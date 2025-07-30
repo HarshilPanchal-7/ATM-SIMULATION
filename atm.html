@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Simple ATM</title>
+<style>
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #4facfe, #00f2fe);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+
+  .atm-container {
+    background: #fff;
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    width: 300px;
+    text-align: center;
+  }
+
+  h2 {
+    margin-bottom: 1rem;
+    color: #333;
+  }
+
+  input[type="number"], input[type="password"], input[type="text"] {
+    width: 100%;
+    padding: 0.5rem;
+    margin: 0.3rem 0 0.8rem 0;
+    border: 1px solid #ccc;
+    border-radius: 0.5rem;
+  }
+
+  button {
+    width: 100%;
+    padding: 0.6rem;
+    margin-top: 0.4rem;
+    border: none;
+    border-radius: 0.5rem;
+    background-color: #4facfe;
+    color: #fff;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background-color: #00c6ff;
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  .balance {
+    font-size: 1.2rem;
+    margin: 1rem 0;
+    color: #444;
+  }
+</style>
+</head>
+<body>
+
+<div class="atm-container">
+  <h2>Welcome to ATM</h2>
+
+  <div id="login-screen">
+    <input type="text" id="account" placeholder="Enter Account Number" />
+    <input type="password" id="pin" placeholder="Enter PIN" />
+    <button onclick="login()">Enter</button>
+  </div>
+
+  <div id="menu-screen" class="hidden">
+    <div class="balance" id="balance-info"></div>
+    <button onclick="showCheckBalance()">Check Balance</button>
+    <button onclick="showDeposit()">Deposit</button>
+    <button onclick="showWithdraw()">Withdraw</button>
+    <button onclick="logout()">Exit</button>
+  </div>
+
+  <div id="deposit-screen" class="hidden">
+    <input type="number" id="deposit-amount" placeholder="Enter amount to deposit" />
+    <button onclick="doDeposit()">Submit Deposit</button>
+    <button onclick="backToMenu()">Back</button>
+  </div>
+
+  <div id="withdraw-screen" class="hidden">
+    <input type="number" id="withdraw-amount" placeholder="Enter amount to withdraw" />
+    <button onclick="doWithdraw()">Submit Withdraw</button>
+    <button onclick="backToMenu()">Back</button>
+  </div>
+
+</div>
+
+<script>
+  let upin = "6354";
+  let avlbal = 40000;
+
+  function showScreen(screenId) {
+    document.querySelectorAll('.atm-container > div').forEach(div => {
+      div.classList.add('hidden');
+    });
+    document.getElementById(screenId).classList.remove('hidden');
+  }
+
+  function login() {
+    let pin = document.getElementById('pin').value;
+    if (pin === upin) {
+      updateBalanceInfo();
+      showScreen('menu-screen');
+    } else {
+      alert('Invalid PIN.');
+    }
+  }
+
+  function logout() {
+    document.getElementById('account').value = "";
+    document.getElementById('pin').value = "";
+    alert("Thank you for visiting ATM.");
+    showScreen('login-screen');
+  }
+
+  function backToMenu() {
+    showScreen('menu-screen');
+  }
+
+  function updateBalanceInfo() {
+    document.getElementById('balance-info').textContent = "Available balance: ₹" + avlbal;
+  }
+
+  function showCheckBalance() {
+    updateBalanceInfo();
+    alert("Your balance is: ₹" + avlbal);
+  }
+
+  function showDeposit() {
+    document.getElementById('deposit-amount').value = "";
+    showScreen('deposit-screen');
+  }
+
+  function doDeposit() {
+    let amount = Number(document.getElementById('deposit-amount').value);
+    if (isNaN(amount) || amount <= 0) {
+      alert("Invalid deposit amount.");
+    } else {
+      avlbal += amount;
+      alert("Deposited successfully: ₹" + amount);
+      updateBalanceInfo();
+      backToMenu();
+    }
+  }
+
+  function showWithdraw() {
+    document.getElementById('withdraw-amount').value = "";
+    showScreen('withdraw-screen');
+  }
+
+  function doWithdraw() {
+    let amount = Number(document.getElementById('withdraw-amount').value);
+    if (isNaN(amount) || amount <= 0) {
+      alert("Invalid withdrawal amount.");
+    } else if (amount <= avlbal) {
+      avlbal -= amount;
+      alert("Successfully withdrawn: ₹" + amount);
+      updateBalanceInfo();
+      backToMenu();
+    } else {
+      alert("Insufficient balance.");
+    }
+  }
+</script>
+<script src="atm.js"></script>
+</body>
+</html>
